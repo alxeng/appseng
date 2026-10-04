@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0c2e4a">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Dimensionamento de Poste · NBR 6123 / NBR 15888</title>
+<style>
+  :root{
+    --navy:#0c2e4a; --navy2:#123c5f; --accent:#1b6ec2; --accent-soft:#e7f0fb;
+    --green:#1d7a34; --green2:#2b9a48; --red:#b8322a; --red2:#d14538;
+    --wind:#1b6ec2; --bg:#eef2f7; --card:#ffffff; --line:#dde5ee; --line2:#c7d2e0;
+    --ink:#1f2d3d; --mut:#5b6b7b;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{font-family:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--ink);}
+  .topbar{background:linear-gradient(120deg,#0b2b45,#124a75);color:#fff;border-bottom:3px solid #1b6ec2;}
+  .topbar-inner{max-width:1200px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand svg{flex:0 0 auto;}
+  .brand h1{margin:0;font-size:19px;font-weight:700;letter-spacing:.2px;line-height:1.15;}
+  .brand .sub{margin:2px 0 0;font-size:12px;opacity:.85;font-weight:400;}
+  .btn{background:#fff;color:var(--navy);border:none;padding:9px 18px;border-radius:7px;font-weight:700;cursor:pointer;font-size:13px;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+  .btn:hover{background:#eaf3fb;}
+  #toast{display:none;position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#0c2e4a;color:#fff;padding:12px 20px;border-radius:8px;font-size:13px;box-shadow:0 4px 14px rgba(0,0,0,.35);z-index:999;max-width:90%;}
+  main{max-width:1200px;margin:18px auto;padding:0 16px;}
+  .layout{display:grid;grid-template-columns:460px 1fr;gap:16px;align-items:start;}
+  .col-full{grid-column:1 / -1;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:0 1px 4px rgba(12,46,74,.07);}
+  .card + .card{margin-top:14px;}
+  .card h2{margin:0 0 13px;font-size:14.5px;color:var(--navy);border-bottom:2px solid var(--accent);padding-bottom:8px;display:flex;align-items:center;gap:8px;}
+  .card h2 .num{background:var(--navy);color:#fff;font-size:11.5px;width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .card h2 .badge{margin-left:auto;font-weight:600;font-size:10.5px;color:var(--mut);border:1px solid var(--line);border-radius:10px;padding:1px 8px;background:#f6f8fb;}
+  .field{margin-bottom:11px;}
+  .field label{display:flex;justify-content:space-between;font-size:12.5px;font-weight:600;color:var(--ink);margin-bottom:4px;}
+  .field .unit{color:var(--mut);font-weight:500;}
+  .field .hint{font-size:11px;color:var(--mut);margin:3px 0 0;line-height:1.4;}
+  input[type=number],input[type=text],select{width:100%;padding:8px 10px;border:1px solid var(--line2);border-radius:7px;font-size:14px;background:#fff;color:var(--ink);font-family:inherit;}
+  input:focus,select:focus{outline:2px solid rgba(27,110,194,.3);border-color:var(--accent);}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .switch-field{display:flex;align-items:flex-start;gap:10px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;background:#fafcff;}
+  .switch-field input{width:18px;height:18px;margin-top:1px;accent-color:var(--navy);}
+  .switch-field label{font-size:13px;font-weight:600;line-height:1.3;}
+  .switch-field .desc{font-size:11.5px;color:var(--mut);font-weight:400;display:block;}
+  .ant-row{border:1px solid var(--line);border-radius:9px;padding:10px 12px;margin-bottom:10px;background:#f8fafc;}
+  .ant-head{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:13px;color:var(--navy);margin-bottom:8px;}
+  .ant-head .rm{border:none;background:#f0e3e2;color:var(--red);border-radius:6px;padding:2px 10px;cursor:pointer;font-weight:700;}
+  .ant-fields{display:grid;grid-template-columns:1fr .8fr 1fr;gap:9px;}
+  .addbtn{width:100%;padding:9px;border:1.5px dashed var(--accent);color:var(--accent);background:#f2f7fd;border-radius:8px;cursor:pointer;font-weight:700;font-size:13px;}
+  .addbtn:hover{background:#e2eefb;}
+  .verdict{border-radius:10px;padding:14px 16px;color:#fff;font-weight:800;font-size:18px;text-align:center;letter-spacing:.4px;margin-bottom:14px;}
+  .verdict.ok{background:linear-gradient(135deg,#1d7a34,#2b9a48);}
+  .verdict.no{background:linear-gradient(135deg,#9c2c24,#d14538);}
+  .verdict.wait{background:linear-gradient(135deg,#7f8c8d,#95a5a6);}
+  .verdict .small{display:block;font-weight:500;font-size:12.5px;letter-spacing:0;margin-top:5px;opacity:.95;}
+  .res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+  .res-box{border:1px solid var(--line);border-radius:9px;padding:9px 12px;background:#fafcff;}
+  .res-box .k{font-size:10.5px;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
+  .res-box .v{font-size:18px;font-weight:800;color:var(--navy);margin-top:2px;}
+  .res-box .u{font-size:10.5px;color:var(--mut);}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  th,td{border:1px solid var(--line);padding:6px 8px;text-align:right;}
+  th{background:#eef3f9;color:var(--navy);font-weight:700;}
+  td:first-child,th:first-child{text-align:left;}
+  tr.tot td{background:#eef3f9;font-weight:800;color:var(--navy);}
+  .compare{display:flex;align-items:center;gap:14px;justify-content:center;flex-wrap:wrap;margin:10px 0 4px;font-size:13.5px;}
+  .compare .pill{border:1px solid var(--line);border-radius:20px;padding:6px 14px;background:#fafcff;}
+  .compare .pill b{font-size:16px;}
+  .compare .vs{color:var(--mut);font-weight:700;}
+  .reco{margin-top:10px;border-radius:8px;padding:10px 12px;font-size:13px;font-weight:700;border:1px solid;line-height:1.4;}
+  .reco.ok{background:#eaf6ee;color:#1d7a34;border-color:#b6dfc0;}
+  .reco.no{background:#fdf1ee;color:#a93226;border-color:#f0c9c0;}
+  details{margin-top:12px;border:1px solid var(--line);border-radius:8px;padding:8px 12px;background:#fafcff;}
+  summary{cursor:pointer;font-weight:700;color:var(--navy);font-size:13px;}
+  details ul{margin:8px 0 4px;padding-left:20px;font-size:12.5px;line-height:1.75;}
+  .canvas-card{padding:14px 16px;}
+  canvas{width:100%;display:block;border:1px solid var(--line);border-radius:8px;background:#fff;}
+  .note{font-size:11.5px;color:var(--mut);margin-top:8px;line-height:1.6;}
+  footer{max-width:1200px;margin:8px auto 30px;padding:0 16px;font-size:11px;color:var(--mut);}
+
+  /* ===== Relatório de impressão (somente na impressão) ===== */
+  #printReport{display:none;}
+
+  @media (max-width:960px){ .layout{grid-template-columns:1fr;} }
+  @media (max-width:700px){
+    .topbar h1{font-size:16px;}
+    .btn{padding:10px 16px;font-size:14px;}
+    .card{padding:13px 12px;}
+    input[type=number],input[type=text],select{padding:12px 10px;font-size:16px;}
+    .field label{font-size:13.5px;}
+    .ant-fields{grid-template-columns:1fr 1fr;}
+    .ant-fields .field:first-child{grid-column:1 / -1;}
+    .addbtn{padding:12px;}
+    .row2{grid-template-columns:1fr;}
+    .res-grid{grid-template-columns:1fr 1fr;}
+    .switch-field{padding:11px 10px;}
+    .switch-field input{width:22px;height:22px;}
+    .verdict{font-size:16px;}
+    th,td{padding:5px 6px;}
+  }
+
+  @page{ size:A4; margin:12mm; }
+  @media print{
+    body{background:#fff;}
+    .topbar{display:none !important;}
+    footer{display:none !important;}
+    .no-print{display:none !important;}
+    .canvas-card{display:none !important;}
+    .card{box-shadow:none;border:none;padding:0;}
+    main{max-width:100%;}
+    .layout{display:block;}
+    #printReport{display:block;color:#000;}
+    #printReport .pr-img{width:100%;margin-top:8px;border:1px solid #ccc;}
+    #printReport .pr-head{border-bottom:3px solid #0c2e4a;padding-bottom:8px;margin-bottom:10px;}
+    #printReport h1{font-size:19px;margin:0;color:#0c2e4a;}
+    #printReport .pr-sub{font-size:12px;margin:4px 0 0;color:#333;}
+    #printReport h3{font-size:13px;color:#0c2e4a;border-bottom:1px solid #999;padding-bottom:3px;margin:16px 0 6px;}
+    #printReport table{font-size:11.5px;color:#000;}
+    #printReport th,#printReport td{border:1px solid #bbb;padding:4px 6px;color:#000;}
+    #printReport th{background:#eee;}
+    #printReport .pr-ident{border:none !important;}
+    #printReport .pr-ident td{border:none;padding:2px 4px;font-size:11.5px;}
+    #printReport .pr-ident td:first-child,#printReport .pr-ident td:nth-child(3){font-weight:700;width:130px;}
+    #printReport .pr-verdict{font-size:15px;font-weight:800;padding:8px;text-align:center;border:2px solid #000;margin-top:8px;}
+    #printReport .pr-verdict.ok{border-color:#1d7a34;color:#1d7a34;}
+    #printReport .pr-verdict.no{border-color:#b8322a;color:#b8322a;}
+    #printReport .pr-sign{display:flex;justify-content:space-around;margin-top:36px;font-size:12px;text-align:center;}
+    #printReport .pr-sign div{width:220px;}
+    #printReport .pr-sign .line{border-top:1px solid #000;margin-top:34px;padding-top:4px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <svg width="34" height="42" viewBox="0 0 34 42" fill="none" aria-hidden="true">
+        <path d="M16 1 L22 3 L22 39 L16 41 L10 39 L10 3 Z" fill="#ffffff" fill-opacity="0.92"/>
+        <path d="M10 18 L6 22 M24 18 L28 22" stroke="#ffd23f" stroke-width="2.5"/>
+        <path d="M10 30 L4 36 M24 30 L30 36" stroke="#ffd23f" stroke-width="2.5"/>
+        <circle cx="16" cy="2" r="3" fill="#ffd23f"/>
+      </svg>
+      <div>
+        <h1>Dimensionamento de Poste — Ação do Vento</h1>
+        <p class="sub">NBR 6123/1988 · NBR 15888 · Cálculo profissional de capacidade nominal</p>
+      </div>
+    </div>
+    <button class="btn" onclick="savePDF()">Salvar PDF</button>
+    <button class="btn" onclick="window.print()">Imprimir</button>
+  </div>
+</header>
+
+<main>
+  <div class="layout">
+
+    <!-- ================= COLUNA ESQUERDA ================= -->
+    <div class="col-left">
+
+      <div class="card no-print">
+        <h2><span class="num">1</span> Identificação do projeto</h2>
+        <div class="row2">
+          <div class="field">
+            <label>Projeto / Obra</label>
+            <input type="text" id="projNome" placeholder="Ex.: Expansão LT — Lote 12" oninput="recalc()">
+          </div>
+          <div class="field">
+            <label>Local</label>
+            <input type="text" id="projLocal" placeholder="Município / UF" oninput="recalc()">
+          </div>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label>Responsável técnico</label>
+            <input type="text" id="projResp" placeholder="Nome / CREA" oninput="recalc()">
+          </div>
+          <div class="field">
+            <label>Data</label>
+            <input type="text" id="projData" oninput="recalc()">
+          </div>
+        </div>
+      </div>
+
+      <div class="card no-print">
+        <h2><span class="num">2</span> Dados do poste</h2>
+
+        <div class="field">
+          <label for="L">Comprimento total do poste <span class="unit">(m)</span></label>
+          <input type="number" id="L" value="12" min="1" step="0.1" oninput="recalc()">
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label for="Db">Diâmetro da base <span class="unit">(mm)</span></label>
+            <input type="number" id="Db" value="400" min="50" step="5" oninput="recalc()">
+          </div>
+          <div class="field">
+            <label for="Dt">Diâmetro do topo <span class="unit">(mm)</span></label>
+            <input type="number" id="Dt" value="120" min="30" step="5" oninput="recalc()">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="Cn">Capacidade nominal <span class="unit">(daN)</span></label>
+          <input type="number" id="Cn" value="500" min="0" step="5" oninput="recalc()">
+          <p class="hint" id="cnHint">= — kgf</p>
+        </div>
+
+        <p class="note">Engastamento (NBR 15888): <b>e = L/10 + 0,60 m</b> · Comprimento útil <b>Lu = L − e</b></p>
+      </div>
+
+      <div class="card no-print">
+        <h2><span class="num">3</span> Parâmetros do vento <span class="badge">NBR 6123</span></h2>
+
+        <div class="row2">
+          <div class="field">
+            <label for="V0">Velocidade básica V<sub>0</sub> <span class="unit">(m/s)</span></label>
+            <input type="number" id="V0" value="35" min="1" step="0.5" oninput="recalc()">
+            <p class="hint">Isopletas do Anexo C (rajada 3 s · 50 anos)</p>
+          </div>
+          <div class="field">
+            <label for="S1">Fator topográfico S<sub>1</sub></label>
+            <select id="S1" onchange="onS1(); recalc()">
+              <option value="1" selected>S1 = 1,00 · plano / pouco acidentado</option>
+              <option value="0.9">S1 = 0,90 · vale profundo</option>
+              <option value="custom">S1 personalizado…</option>
+            </select>
+            <input type="number" id="S1custom" value="1" min="0.1" step="0.01" style="display:none;margin-top:5px" oninput="recalc()">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="poleCa">Coeficiente de arrasto do poste (Ca)</label>
+          <select id="poleCa" onchange="recalc()">
+            <option value="c12" selected>Ca = 1,20 constante (subcrítico) · padrão / segurança</option>
+            <option value="reynolds">Ca por Reynolds (Tabela 13) · avaliação de risco</option>
+          </select>
+          <p class="hint">Estrutura de telecomunicações: usar Ca = 1,20 (máximo da Tabela 13, dispensa a nota 6.3.6). Reynolds apenas para avaliar risco.</p>
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label for="categoria">Categoria do terreno (S<sub>2</sub>)</label>
+            <select id="categoria" onchange="recalc()">
+              <option value="I">I · campo aberto / liso</option>
+              <option value="II">II · campo aberto, obstáculos isolados</option>
+              <option value="III" selected>III · obstáculos esparsos</option>
+              <option value="IV">IV · subúrbio / industrial</option>
+              <option value="V">V · centro urbano denso</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="classe">Classe (S<sub>2</sub>)</label>
+            <select id="classe" onchange="recalc()">
+              <option value="A" selected>Classe A · dimensão ≤ 20 m</option>
+              <option value="B">Classe B · 20 m a 50 m</option>
+              <option value="C">Classe C · acima de 50 m</option>
+            </select>
+            <p class="hint">Poste = peça individual sem vedação → Classe A</p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="grupo">Grupo / fator estatístico S<sub>3</sub></label>
+          <select id="grupo" onchange="recalc()">
+            <option value="2" selected>Grupo 2 · S3 = 1,00 (residências, comércio)</option>
+            <option value="3">Grupo 3 · S3 = 0,95 (industriais, silos)</option>
+            <option value="1">Grupo 1 · S3 = 1,10 (segurança/socorro)</option>
+            <option value="4">Grupo 4 · S3 = 0,88 (vedações, telhas)</option>
+            <option value="5">Grupo 5 · S3 = 0,83 (temporárias)</option>
+          </select>
+          <p class="hint" id="s3Hint"></p>
+        </div>
+      </div>
+
+      <div class="card no-print">
+        <h2><span class="num">4</span> Antenas <span class="badge">AEV sem CA</span></h2>
+        <div id="antList"></div>
+        <button class="addbtn" onclick="addAntenna()">+ Adicionar antena</button>
+        <p class="note">AEV = área exposta ao vento (m²) · CA em 0,8 / 1,2 / 1,6 · Altura h medida do final do engastamento (0 = engastamento, L = topo).</p>
+      </div>
+
+      <div class="card no-print">
+        <h2><span class="num">5</span> Escada e plataforma</h2>
+
+        <div class="switch-field">
+          <input type="checkbox" id="escada" onchange="recalc()">
+          <label for="escada">O poste possui escada
+            <span class="desc">Acréscimo de 0,26 m² por metro de altura (efeito do vento no poste)</span>
+          </label>
+        </div>
+
+        <div class="switch-field">
+          <input type="checkbox" id="plataforma" onchange="togglePlat(); recalc()">
+          <label for="plataforma">O poste possui plataforma
+            <span class="desc">CA da plataforma adotado = 1,2</span>
+          </label>
+        </div>
+
+        <div id="platBox" style="display:none">
+          <div class="row2">
+            <div class="field">
+              <label for="platArea">Área da plataforma (sem CA) <span class="unit">(m²)</span></label>
+              <input type="number" id="platArea" value="0.5" min="0" step="0.05" oninput="recalc()">
+            </div>
+            <div class="field">
+              <label for="platH">Altura da plataforma h <span class="unit">(m)</span></label>
+              <input type="number" id="platH" value="12" min="0" step="0.1" oninput="recalc()">
+            </div>
+          </div>
+          <p class="note">Altura medida do engastamento (0) ao topo (L).</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= COLUNA DIREITA ================= -->
+    <div class="col-right">
+      <div class="card no-print">
+        <h2><span class="num">6</span> Resultado da verificação</h2>
+        <div id="verdict" class="verdict wait">AGUARDANDO DADOS</div>
+
+        <div class="res-grid">
+          <div class="res-box"><div class="k">Momento resistente Mr</div><div class="v" id="r-Mr">—</div><div class="u" id="r-MrdaN">kgf·m</div></div>
+          <div class="res-box"><div class="k">Momento de projeto Md</div><div class="v" id="r-Md">—</div><div class="u" id="r-MddaN">kgf·m</div></div>
+          <div class="res-box"><div class="k">Utilização</div><div class="v" id="r-util">—</div><div class="u">Md / Mr</div></div>
+        </div>
+
+        <div class="compare">
+          <div class="pill">Capacidade declarada: <b id="c-cn">—</b> daN</div>
+          <span class="vs">≥</span>
+          <div class="pill">Necessidade (projeto): <b id="c-fp">—</b> daN</div>
+        </div>
+        <p class="note" id="c-note">Necessidade = Md / Lu (carga equivalente no topo do poste).</p>
+        <div id="reco" class="reco" style="display:none"></div>
+
+        <table>
+          <thead>
+            <tr><th>Componente / ação do vento</th><th>Vk (m/s)</th><th>q (N/m²)</th><th>F (kgf)</th><th>Braço (m)</th><th>M (kgf·m)</th></tr>
+          </thead>
+          <tbody id="tabComp"></tbody>
+        </table>
+
+        <details>
+          <summary>Memória de cálculo (NBR 6123 / NBR 15888)</summary>
+          <ul id="memoria"></ul>
+        </details>
+      </div>
+    </div>
+
+    <!-- ================= DESENHO ================= -->
+    <div class="col-full">
+      <div class="card canvas-card">
+        <h2><span class="num">7</span> Esquema do poste e ações do vento</h2>
+        <canvas id="cv" width="2720" height="1640"></canvas>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  NBR 6123/1988 — Forças devidas ao vento em edificações (Vk = V0·S1·S2·S3; q = 0,613·Vk²; S2 = b·Fr·(z/10)^p; Ca pela Tabela 13; K pela Tabela 11) ·
+  NBR 15888 — Postes de concreto armado (engastamento e = L/10 + 0,60 m) · Conversão: 1 daN = 1,019716 kgf.
+</footer>
+
+<!-- ================= RELATÓRIO (IMPRESSÃO) ================= -->
+<div id="printReport">
+  <div class="pr-head">
+    <h1>Relatório Técnico — Dimensionamento de Poste à Ação do Vento</h1>
+    <p class="pr-sub">NBR 6123/1988 (forças devidas ao vento) · NBR 15888 (postes de concreto armado)</p>
+  </div>
+  <table class="pr-ident">
+    <tr><td>Projeto:</td><td id="pr-proj">—</td><td>Data:</td><td id="pr-data">—</td></tr>
+    <tr><td>Local:</td><td id="pr-local">—</td><td>Responsável:</td><td id="pr-resp">—</td></tr>
+  </table>
+
+  <h3>1 · Dados do poste e engastamento</h3>
+  <table>
+    <thead><tr><th>Parâmetro</th><th>Valor</th><th>Parâmetro</th><th>Valor</th></tr></thead>
+    <tbody id="pr-poste"></tbody>
+  </table>
+
+  <h3>2 · Parâmetros do vento (NBR 6123)</h3>
+  <table>
+    <thead><tr><th>Parâmetro</th><th>Valor</th><th>Parâmetro</th><th>Valor</th></tr></thead>
+    <tbody id="pr-vento"></tbody>
+  </table>
+
+  <h3>3 · Ações do vento e momentos</h3>
+  <table>
+    <thead><tr><th>Componente</th><th>Vk (m/s)</th><th>q (N/m²)</th><th>F (kgf)</th><th>Braço (m)</th><th>M (kgf·m)</th></tr></thead>
+    <tbody id="pr-comp"></tbody>
+  </table>
+
+  <h3>4 · Verificação estrutural</h3>
+  <table>
+    <thead><tr><th>Grandeza</th><th>kgf·m</th><th>daN·m</th></tr></thead>
+    <tbody id="pr-verif"></tbody>
+  </table>
+
+  <div class="pr-verdict" id="pr-verdict">—</div>
+
+  <h3>5 · Esquema do poste e deformada</h3>
+  <img id="pr-img" class="pr-img" alt="Esquema do poste">
+
+  <div class="pr-sign">
+    <div><div class="line">Responsável técnico</div></div>
+    <div><div class="line">Data</div></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ============================================================
+   Tabelas NBR 6123
+============================================================ */
+var S2P = {
+  I :{b:{A:1.10,B:1.11,C:1.12}, p:{A:0.060,B:0.065,C:0.070}, zg:250},
+  II:{b:{A:1.00,B:1.00,C:1.00}, p:{A:0.085,B:0.090,C:0.100}, zg:300},
+  III:{b:{A:0.94,B:0.94,C:0.93}, p:{A:0.100,B:0.105,C:0.115}, zg:350},
+  IV:{b:{A:0.86,B:0.85,C:0.84}, p:{A:0.120,B:0.125,C:0.135}, zg:420},
+  V :{b:{A:0.74,B:0.73,C:0.71}, p:{A:0.150,B:0.160,C:0.175}, zg:500}
+};
+var FR = {A:1.00, B:0.98, C:0.95};
+var S3G = {1:1.10, 2:1.00, 3:0.95, 4:0.88, 5:0.83};
+
+var K_IoD  = [2,5,10,20,40,50,100,Infinity];
+var K_ACRIT = [0.80,0.80,0.82,0.90,0.98,0.99,1.00,1.00];
+
+/* Capacidades nominais padrão de postes (daN) — série usual de mercado */
+var STD_POLES = [100,150,200,250,300,400,500,600,800,1000,1200,1500,2000,2500,3000];
+function recoPole(necDaN){
+  for(var i=0;i<STD_POLES.length;i++){ if(STD_POLES[i] >= necDaN) return STD_POLES[i]; }
+  return null;
+}
+
+/* ============================================================
+   Helpers
+============================================================ */
+function num(id){ return parseFloat(document.getElementById(id).value); }
+function sel(id){ return document.getElementById(id).value; }
+function txt(id){ return document.getElementById(id).value; }
+function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+function fmt(x,d){
+  if(!isFinite(x)) return '—';
+  d = (d===undefined)?2:d;
+  return x.toLocaleString('pt-BR',{minimumFractionDigits:d, maximumFractionDigits:d});
+}
+
+function s2(z,cat,cls){
+  var P = S2P[cat], ze = z;
+  if(cat==='V' && ze < 10) ze = 10;
+  ze = Math.max(ze, 0.5);
+  return P.b[cls]*FR[cls]*Math.pow(ze/10, P.p[cls]);
+}
+function vk(z,st){ return st.V0*st.S1*s2(z,st.cat,st.cls)*st.S3; }
+function qdyn(V){ return 0.613*V*V; }
+
+function caPole(Re){
+  if(Re < 4.2e5) return 1.2;
+  if(Re < 8.4e5) return 0.6;
+  if(Re < 2.3e6) return 0.7;
+  return 0.8;
+}
+function kFactor(ioD){
+  if(ioD <= 2) return K_ACRIT[0];
+  if(ioD >= 100) return K_ACRIT[6];
+  for(var i=0;i<K_IoD.length-1;i++){
+    if(ioD >= K_IoD[i] && ioD <= K_IoD[i+1]){
+      var t=(ioD-K_IoD[i])/(K_IoD[i+1]-K_IoD[i]);
+      return K_ACRIT[i]+(K_ACRIT[i+1]-K_ACRIT[i])*t;
+    }
+  }
+  return K_ACRIT[7];
+}
+
+/* ============================================================
+   Antenas
+============================================================ */
+var antRows = [{aev:1, ca:'1.2', h:null}];
+function renderAntennas(){
+  var L = num('L'); if(!isFinite(L)) L = 12;
+  var box = document.getElementById('antList');
+  var html = '';
+  antRows.forEach(function(r,i){
+    var h = (r.h==null || isFinite(r.h)) ? r.h : null;
+    var hval = (h==null)?L:(isFinite(h)?h:'');
+    html += '<div class="ant-row">'
+      + '<div class="ant-head"><span>Antena ' + (i+1) + '</span>'
+      + (antRows.length>1 ? '<button class="rm" onclick="removeAntenna('+i+')">✕</button>' : '')
+      + '</div>'
+      + '<div class="ant-fields">'
+      + '<div class="field"><label>AEV <span class="unit">(m²)</span></label><input class="ant-aev" type="number" value="'+r.aev+'" min="0" step="0.05" oninput="recalc()"></div>'
+      + '<div class="field"><label>CA</label><select class="ant-ca" onchange="recalc()">'
+      +   '<option value="0.8"'+(r.ca=='0.8'?' selected':'')+'>0,80</option>'
+      +   '<option value="1.2"'+(r.ca=='1.2'?' selected':'')+'>1,20</option>'
+      +   '<option value="1.6"'+(r.ca=='1.6'?' selected':'')+'>1,60</option>'
+      + '</select></div>'
+      + '<div class="field"><label>Altura h <span class="unit">(m)</span></label><input class="ant-h" type="number" value="'+hval+'" min="0" step="0.1" oninput="recalc()"></div>'
+      + '</div></div>';
+  });
+  box.innerHTML = html;
+}
+function addAntenna(){
+  var L = num('L'); if(!isFinite(L)) L = 12;
+  antRows.push({aev:1, ca:'1.2', h:L});
+  renderAntennas(); recalc();
+}
+function removeAntenna(i){ antRows.splice(i,1); renderAntennas(); recalc(); }
+function readAntennas(){
+  var out = [];
+  document.querySelectorAll('#antList .ant-row').forEach(function(r){
+    var aev = parseFloat(r.querySelector('.ant-aev').value) || 0;
+    var ca  = parseFloat(r.querySelector('.ant-ca').value)  || 0;
+    var h   = parseFloat(r.querySelector('.ant-h').value);
+    out.push({aev:aev, ca:ca, h:isFinite(h)?h:0});
+  });
+  return out;
+}
+function onS1(){
+  var c = document.getElementById('S1custom');
+  c.style.display = (sel('S1')==='custom') ? 'block' : 'none';
+}
+function togglePlat(){
+  document.getElementById('platBox').style.display =
+    document.getElementById('plataforma').checked ? 'block' : 'none';
+}
+
+/* ============================================================
+   Cálculo principal
+============================================================ */
+function computeState(){
+  var L=num('L'), Db=num('Db'), Dt=num('Dt'), Cn=num('Cn'), V0=num('V0');
+  var s1sel = sel('S1');
+  var S1 = (s1sel==='custom') ? num('S1custom') : parseFloat(s1sel);
+  var cat = sel('categoria'), cls = sel('classe');
+  var S3 = S3G[parseInt(sel('grupo'),10)] || 1.00;
+
+  var st = {
+    L:L, Db:Db, Dt:Dt, Cn:Cn, V0:V0, S1:S1, cat:cat, cls:cls, S3:S3,
+    poleCaMode: sel('poleCa'),
+    escada:document.getElementById('escada').checked,
+    plataforma:document.getElementById('plataforma').checked,
+    Apl:num('platArea'), hpl:num('platH')
+  };
+  st.invalid = !isFinite(L)||!isFinite(Db)||!isFinite(Dt)||!isFinite(Cn)||!isFinite(V0)||!isFinite(S1);
+
+  st.e  = L/10 + 0.60;
+  st.Lu = L - st.e;
+  st.Dbm = Db/1000; st.Dtm = Dt/1000;
+  st.De = st.Dbm - (st.Dbm - st.Dtm)*(st.e/L);
+  st.cnKgf = Cn*1.019716;
+  st.s2top = s2(st.Lu, cat, cls);
+  st.Vktop = V0*S1*st.s2top*S3;
+  st.qtop  = qdyn(st.Vktop);
+
+  st.pole = poleWind(st);
+
+  st.lad = st.escada ? ladderWind(st) : {F:0,M:0,K:0};
+  if(st.escada){ st.lad.arm = st.lad.F>0 ? st.lad.M/st.lad.F : st.Lu/2;
+    st.lad.V = vk(st.lad.arm, st); st.lad.Q = qdyn(st.lad.V); }
+  st.lad.Fk = st.lad.F/9.80665;
+  st.lad.Mk = st.lad.M/9.80665;
+
+  st.ants = readAntennas().map(function(a){
+    var h = clamp(a.h || 0, st.e, L);
+    var V = vk(h, st), q = qdyn(V);
+    var F = a.ca*q*a.aev;
+    return {aev:a.aev, ca:a.ca, h:h, V:V, q:q, F:F, M:F*h, clamped:(a.h < st.e || a.h > L)};
+  });
+
+  if(st.plataforma){
+    var hpl = clamp(st.hpl || 0, st.e, L);
+    var Vpl = vk(hpl, st), qpl = qdyn(Vpl);
+    var Fpl = 1.2*qpl*st.Apl;
+    st.pl = {h:hpl, V:Vpl, q:qpl, F:Fpl, M:Fpl*hpl, Fk:Fpl/9.80665, Mk:Fpl*hpl/9.80665};
+  } else {
+    st.pl = {h:0, V:0, q:0, F:0, M:0, Fk:0, Mk:0};
+  }
+
+  st.Mpole = st.pole.M/9.80665;
+  st.Mlad  = st.lad.Mk;
+  st.Mant  = st.ants.reduce(function(s,a){ return s + a.M/9.80665; },0);
+  st.Mpl   = st.pl.Mk;
+  st.Md    = st.Mpole + st.Mlad + st.Mant + st.Mpl;
+
+  st.Ftotal = st.pole.F/9.80665 + st.lad.Fk + st.ants.reduce(function(s,a){return s+a.F/9.80665;},0) + st.pl.Fk;
+
+  st.Mr    = st.cnKgf * st.Lu;
+  st.Fproj = st.Lu>0 ? st.Md/st.Lu : NaN;
+  st.util  = st.Mr>0 ? st.Md/st.Mr*100 : NaN;
+  st.approved = st.Mr >= st.Md;
+
+  /* necessidade em daN e recomendação de poste padrão */
+  st.necDaN = st.Fproj * 0.980665;
+  st.recoDaN = st.approved ? null : recoPole(st.necDaN);
+
+  /* deslocamento no topo — estimativa elástica (seção média, viga em balanço) */
+  var E = 25e9;
+  var dAvg = (st.De + st.Dtm)/2;
+  var I = Math.PI*Math.pow(dAvg,4)/64;
+  var w = (st.pole.F + st.lad.F)/Math.max(st.Lu, 0.001);
+  var acc = 0;
+  st.ants.forEach(function(a){ acc += a.F*a.h*a.h*(3*st.Lu - a.h)/6; });
+  if(st.plataforma) acc += st.pl.F*st.pl.h*st.pl.h*(3*st.Lu - st.pl.h)/6;
+  st.dTop = (w*Math.pow(st.Lu,4)/8 + acc) / (E*I);
+
+  return st;
+}
+
+function poleWind(st){
+  var N=300, F=0, M=0, De=st.De, Dtm=st.Dtm, Lu=st.Lu;
+  var useRey = (st.poleCaMode === 'reynolds');
+  var caMin=99, caMax=-99;
+  for(var i=0;i<N;i++){
+    var z0=Lu*i/N, z1=Lu*(i+1)/N, z=(z0+z1)/2;
+    var d = De + (Dtm-De)*z/Lu;
+    var V = vk(z, st), q = qdyn(V);
+    var Ca;
+    if(useRey){
+      var Re = 70000*V*d;
+      Ca = caPole(Re);
+      if(Ca < caMin) caMin = Ca;
+      if(Ca > caMax) caMax = Ca;
+    } else {
+      Ca = 1.2;
+    }
+    var dA = d*(z1-z0);
+    F += Ca*q*dA;
+    M += Ca*q*dA*z;
+  }
+  var dMean = (De+Dtm)/2;
+  var ioD = Lu/dMean;
+  var K = kFactor(ioD);
+  F*=K; M*=K;
+  var arm = F>0 ? M/F : Lu/2;
+  return {F:F, M:M, K:K, ioD:ioD, arm:arm, V:vk(arm,st), Q:qdyn(vk(arm,st)),
+          caMode: st.poleCaMode,
+          caRange: useRey ? {min:caMin, max:caMax} : {min:1.2, max:1.2},
+          CaTop: useRey ? caPole(70000*vk(Lu,st)*Dtm) : 1.2};
+}
+
+function ladderWind(st){
+  var N=300, F=0, M=0, Lu=st.Lu;
+  for(var i=0;i<N;i++){
+    var z0=Lu*i/N, z1=Lu*(i+1)/N, z=(z0+z1)/2;
+    var q = qdyn(vk(z, st));
+    var dF = 1.2*q*0.26*(z1-z0);
+    F += dF; M += dF*z;
+  }
+  return {F:F, M:M};
+}
+
+/* ============================================================
+   Interface + relatório
+============================================================ */
+function caDescr(st){
+  if(st.pole.caMode === 'reynolds')
+    return 'Ca por Reynolds (Tabela 13): ' + fmt(st.pole.caRange.min,1) + ' a ' + fmt(st.pole.caRange.max,1);
+  return 'Ca = 1,20 constante (subcrítico)';
+}
+
+/* ============================================================
+   Salvar relatório (PDF)
+============================================================ */
+function sanitizeName(s){ return String(s||'').replace(/[\\/:*?"<>|]+/g,'-').replace(/\s+/g,'_').replace(/_+/g,'_').replace(/^_+|_+$/g,''); }
+function buildFilename(){
+  var p = ['Relatorio_Poste'];
+  var o = sanitizeName(txt('projNome')); if(o) p.push(o);
+  var l = sanitizeName(txt('projLocal')); if(l) p.push(l);
+  var d = sanitizeName(txt('projData')); if(d) p.push(d);
+  return p.join('_') + '.pdf';
+}
+function showToast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(function(){ t.style.display = 'none'; }, 7000);
+}
+function savePDF(){
+  if(window.posteAPI && window.posteAPI.savePDF){
+    window.posteAPI.savePDF(buildFilename());
+    showToast('Gerando relatório em PDF…');
+  } else {
+    window.print();
+  }
+}
+
+function recalc(){
+  var st = computeState();
+
+  document.getElementById('cnHint').textContent = isFinite(st.cnKgf)
+    ? ('= ' + fmt(st.cnKgf,2) + ' kgf (1 daN = 1,019716 kgf)') : '= — kgf';
+  document.getElementById('s3Hint').textContent = 'S3 adotado = ' + fmt(st.S3,2);
+
+  /* ----- relatório de impressão ----- */
+  document.getElementById('pr-proj').textContent = txt('projNome') || '—';
+  document.getElementById('pr-local').textContent = txt('projLocal') || '—';
+  document.getElementById('pr-resp').textContent = txt('projResp') || '—';
+  document.getElementById('pr-data').textContent = txt('projData') || '—';
+
+  var ttl = ['Poste'];
+  if(txt('projNome')) ttl.push(txt('projNome'));
+  if(txt('projLocal')) ttl.push(txt('projLocal'));
+  if(txt('projData')) ttl.push(txt('projData'));
+  document.title = ttl.join(' — ');
+
+  if(st.invalid || st.Lu <= 0){
+    var v = document.getElementById('verdict');
+    v.className = 'verdict wait'; v.innerHTML = 'AGUARDANDO DADOS';
+    ['r-Mr','r-Md','r-util','c-cn','c-fp'].forEach(function(id){ document.getElementById(id).textContent='—'; });
+    document.getElementById('c-note').textContent = 'Necessidade = Md / Lu (carga equivalente no topo do poste).';
+    document.getElementById('reco').style.display = 'none';
+    document.getElementById('r-MrdaN').textContent='kgf·m';
+    document.getElementById('r-MddaN').textContent='kgf·m';
+    document.getElementById('tabComp').innerHTML='';
+    document.getElementById('memoria').innerHTML='';
+    document.getElementById('pr-poste').innerHTML='';
+    document.getElementById('pr-vento').innerHTML='';
+    document.getElementById('pr-comp').innerHTML='';
+    document.getElementById('pr-verif').innerHTML='';
+    document.getElementById('pr-verdict').textContent='AGUARDANDO DADOS';
+    draw(st);
+    return;
+  }
+
+  var verdict = document.getElementById('verdict');
+  if(st.approved){
+    verdict.className = 'verdict ok';
+    verdict.innerHTML = 'POSTE APROVADO'
+      + '<span class="small">Mr = ' + fmt(st.Mr) + ' kgf·m ≥ Md = ' + fmt(st.Md) + ' kgf·m · necessidade ' + fmt(st.necDaN,0) + ' daN ≤ ' + fmt(st.Cn,0) + ' daN</span>';
+  } else {
+    verdict.className = 'verdict no';
+    verdict.innerHTML = 'POSTE REPROVADO'
+      + '<span class="small">Mr = ' + fmt(st.Mr) + ' kgf·m &lt; Md = ' + fmt(st.Md) + ' kgf·m · necessidade ' + fmt(st.necDaN,0) + ' daN &gt; ' + fmt(st.Cn,0) + ' daN' + (st.recoDaN ? ' → sugerido ' + st.recoDaN + ' daN' : '') + '</span>';
+  }
+
+  document.getElementById('r-Mr').textContent = fmt(st.Mr);
+  document.getElementById('r-MrdaN').textContent = 'kgf·m · ' + fmt(st.Mr*0.980665,1) + ' daN·m';
+  document.getElementById('r-Md').textContent = fmt(st.Md);
+  document.getElementById('r-MddaN').textContent = 'kgf·m · ' + fmt(st.Md*0.980665,1) + ' daN·m';
+  document.getElementById('r-util').textContent = fmt(st.util,1) + ' %';
+  document.getElementById('c-cn').textContent = fmt(st.Cn,0) + ' daN';
+  document.getElementById('c-fp').textContent = fmt(st.necDaN,0) + ' daN';
+  document.getElementById('c-note').textContent = 'Necessidade = Md / Lu = ' + fmt(st.Fproj,2) + ' kgf (' + fmt(st.necDaN,0) + ' daN) · Capacidade declarada = ' + fmt(st.cnKgf,2) + ' kgf (' + fmt(st.Cn,0) + ' daN).';
+
+  var reco = document.getElementById('reco');
+  reco.style.display = 'block';
+  if(st.approved){
+    reco.className = 'reco ok';
+    reco.textContent = 'Capacidade adequada: o poste de ' + fmt(st.Cn,0) + ' daN atende (utilização ' + fmt(st.util,1) + '%).';
+  } else if(st.recoDaN){
+    reco.className = 'reco no';
+    reco.textContent = 'Sugestão: utilizar poste padrão de ' + st.recoDaN + ' daN (imediatamente acima da necessidade de ' + fmt(st.necDaN,0) + ' daN).';
+  } else {
+    reco.className = 'reco no';
+    reco.textContent = 'Necessidade (' + fmt(st.necDaN,0) + ' daN) acima da maior capacidade padrão (3000 daN) — avaliar poste especial/reforçado.';
+  }
+
+  /* tabela de componentes (tela) */
+  var tb = document.getElementById('tabComp');
+  var html = '';
+  function row(name,V,q,F,arm,M){
+    return '<tr><td>'+name+'</td><td>'+fmt(V,1)+'</td><td>'+fmt(q,0)+'</td><td>'+fmt(F,2)+'</td><td>'+fmt(arm,2)+'</td><td>'+fmt(M,2)+'</td></tr>';
+  }
+  var caLabel = (st.pole.caMode === 'reynolds')
+    ? 'Poste – vento distribuído (Ca por Reynolds: ' + fmt(st.pole.caRange.min,1) + ' a ' + fmt(st.pole.caRange.max,1) + ' · K=' + fmt(st.pole.K,2) + ')'
+    : 'Poste – vento distribuído (Ca = 1,20 constante · K=' + fmt(st.pole.K,2) + ')';
+  html += row(caLabel, st.pole.V, st.pole.Q, st.pole.F/9.80665, st.pole.arm, st.Mpole);
+  if(st.escada) html += row('Escada – 0,26 m²/m (CA=1,2)', st.lad.V, st.lad.Q, st.lad.Fk, st.lad.arm, st.Mlad);
+  st.ants.forEach(function(a,i){
+    html += row('Antena '+(i+1)+' (AEV '+fmt(a.aev,2)+' m², CA='+fmt(a.ca,1)+')', a.V, a.q, a.F/9.80665, a.h, a.M/9.80665);
+  });
+  if(st.plataforma) html += row('Plataforma (CA=1,2)', st.pl.V, st.pl.q, st.pl.Fk, st.pl.h, st.pl.Mk);
+  html += '<tr class="tot"><td>TOTAL → Momento de projeto Md</td><td></td><td></td><td>'+fmt(st.Ftotal,2)+'</td><td></td><td>'+fmt(st.Md,2)+'</td></tr>';
+  tb.innerHTML = html;
+
+  /* memória de cálculo */
+  var mem = document.getElementById('memoria');
+  mem.innerHTML =
+    '<li>Engastamento (NBR 15888): <b>e = L/10 + 0,60</b> = ' + fmt(st.L,1) + '/10 + 0,60 = <b>' + fmt(st.e) + ' m</b></li>'
+    + '<li>Comprimento útil: <b>Lu = L − e</b> = ' + fmt(st.Lu) + ' m</li>'
+    + '<li>Diâmetro no engastamento: D<sub>e</sub> = Db − (Db−Dt)·e/L = <b>' + fmt(st.De*1000,0) + ' mm</b></li>'
+    + '<li>Capacidade nominal: Cn = ' + fmt(st.Cn,0) + ' daN = <b>' + fmt(st.cnKgf,2) + ' kgf</b></li>'
+    + '<li>S<sub>2</sub>(z) = b·Fr·(z/10)<sup>p</sup> → topo: S<sub>2</sub> = <b>' + fmt(st.s2top,3) + '</b> (categoria ' + st.cat + ', classe ' + st.cls + '; Fr da categoria II)</li>'
+    + '<li>Vk(topo) = V0·S1·S2·S3 = <b>' + fmt(st.Vktop,1) + ' m/s</b> · q(topo) = 0,613·Vk² = <b>' + fmt(st.qtop,0) + ' N/m²</b> (' + fmt(st.qtop/9.80665,0) + ' kgf/m²)</li>'
+    + '<li>Poste: ' + caDescr(st) + '; K pela Tabela 11 (l/d = ' + fmt(st.pole.ioD,1) + ') → K = ' + fmt(st.pole.K,2)
+        + (st.pole.caMode==='reynolds' ? ' (modo de avaliação de risco – ver nota 6.3.6)' : ' (dispensa a checagem da nota 6.3.6)') + '</li>'
+    + '<li>Força de arrasto: F<sub>a</sub> = Ca·q·A<sub>e</sub> (antenas/plataforma) e ∫Ca·q·d·K dz (poste e escada)</li>'
+    + '<li><b>Momento resistente nominal: Mr = Cn(kgf)·Lu</b> = <b>' + fmt(st.Mr) + ' kgf·m</b> (' + fmt(st.Mr*0.980665,1) + ' daN·m)</li>'
+    + '<li><b>Momento de projeto: Md</b> = Σ(F·z) = <b>' + fmt(st.Md) + ' kgf·m</b> (' + fmt(st.Md*0.980665,1) + ' daN·m)</li>'
+    + '<li><b>Capacidade de projeto = Md/Lu</b> = <b>' + fmt(st.Fproj,2) + ' kgf</b> = <b>' + fmt(st.necDaN,0) + ' daN</b> (necessidade)</li>'
+    + '<li>Deslocamento estimado no topo: δ ≈ <b>' + fmt(st.dTop*1000,1) + ' mm</b> (estimativa elástica com seção média — deformada exagerada no desenho)</li>'
+    + '<li>' + (st.approved
+        ? 'Capacidade declarada de ' + fmt(st.Cn,0) + ' daN é <b>adequada</b> (necessidade ' + fmt(st.necDaN,0) + ' daN).'
+        : (st.recoDaN
+            ? 'Necessidade ' + fmt(st.necDaN,0) + ' daN &gt; ' + fmt(st.Cn,0) + ' daN → <b>poste padrão sugerido: ' + st.recoDaN + ' daN</b> (imediatamente acima).'
+            : 'Necessidade ' + fmt(st.necDaN,0) + ' daN acima da maior capacidade padrão → avaliar poste especial.')) + '</li>'
+    + '<li>Verificação: Mr ' + (st.approved?'≥':'&lt;') + ' Md → poste <b>' + (st.approved?'APROVADO':'REPROVADO') + '</b> · utilização ' + fmt(st.util,1) + '%</li>';
+
+  /* ----- relatório de impressão (preencher) ----- */
+  function pair(td1, a, td2, b){
+    return '<tr><td>'+td1+'</td><td>'+a+'</td><td>'+td2+'</td><td>'+b+'</td></tr>';
+  }
+  document.getElementById('pr-poste').innerHTML =
+    pair('Comprimento total L', fmt(st.L,2) + ' m', 'Capacidade nominal Cn', fmt(st.Cn,0) + ' daN')
+    + pair('Diâmetro da base Db', fmt(st.Db,0) + ' mm', 'Capacidade nominal (kgf)', fmt(st.cnKgf,2) + ' kgf')
+    + pair('Diâmetro do topo Dt', fmt(st.Dt,0) + ' mm', 'Engastamento e = L/10+0,60', fmt(st.e) + ' m')
+    + pair('Diâmetro no engastamento D_e', fmt(st.De*1000,0) + ' mm', 'Comprimento útil Lu', fmt(st.Lu,2) + ' m');
+
+  document.getElementById('pr-vento').innerHTML =
+    pair('Velocidade básica V0', fmt(st.V0,1) + ' m/s', 'Categoria / Classe', st.cat + ' / ' + st.cls)
+    + pair('Fator topográfico S1', fmt(st.S1,2), 'Fator estatístico S3', fmt(st.S3,2))
+    + pair('Coeficiente de arrasto Ca', caDescr(st), 'S2 (topo)', fmt(st.s2top,3))
+    + pair('Vk (topo)', fmt(st.Vktop,1) + ' m/s', 'q (topo)', fmt(st.qtop,0) + ' N/m²');
+
+  var comps = [];
+  comps.push(['Poste – vento distribuído', st.pole.V, st.pole.Q, st.pole.F/9.80665, st.pole.arm, st.Mpole]);
+  if(st.escada) comps.push(['Escada (0,26 m²/m · CA=1,2)', st.lad.V, st.lad.Q, st.lad.Fk, st.lad.arm, st.Mlad]);
+  st.ants.forEach(function(a,i){ comps.push(['Antena '+(i+1)+' (AEV '+fmt(a.aev,2)+', CA='+fmt(a.ca,1)+')', a.V, a.q, a.F/9.80665, a.h, a.M/9.80665]); });
+  if(st.plataforma) comps.push(['Plataforma (CA=1,2)', st.pl.V, st.pl.q, st.pl.Fk, st.pl.h, st.pl.Mk]);
+  comps.push(['TOTAL (Momento de projeto Md)', null, null, st.Ftotal, null, st.Md]);
+  document.getElementById('pr-comp').innerHTML = comps.map(function(c){
+    return '<tr><td>'+c[0]+'</td><td>'+(c[1]===null?'':fmt(c[1],1))+'</td><td>'+(c[2]===null?'':fmt(c[2],0))+'</td><td>'+(c[3]===null?'':fmt(c[3],2))+'</td><td>'+(c[4]===null?'':fmt(c[4],2))+'</td><td>'+(c[5]===null?'':fmt(c[5],2))+'</td></tr>';
+  }).join('');
+
+  var recoTxt = st.approved
+    ? 'Adequado — poste de ' + fmt(st.Cn,0) + ' daN atende (necessidade ' + fmt(st.necDaN,0) + ' daN)'
+    : (st.recoDaN
+        ? 'Sugerido: poste padrão de ' + st.recoDaN + ' daN (imediatamente acima da necessidade ' + fmt(st.necDaN,0) + ' daN)'
+        : 'Necessidade acima da capacidade padrão — avaliar poste especial');
+  document.getElementById('pr-verif').innerHTML =
+    '<tr><td>Momento resistente nominal Mr</td><td>'+fmt(st.Mr)+'</td><td>'+fmt(st.Mr*0.980665,1)+'</td></tr>'
+    + '<tr><td>Momento de projeto Md</td><td>'+fmt(st.Md)+'</td><td>'+fmt(st.Md*0.980665,1)+'</td></tr>'
+    + '<tr><td>Necessidade (Md/Lu)</td><td>'+fmt(st.Fproj,2)+' kgf</td><td>'+fmt(st.necDaN,0)+' daN</td></tr>'
+    + '<tr><td>Capacidade declarada (Cn)</td><td>'+fmt(st.cnKgf,2)+' kgf</td><td>'+fmt(st.Cn,0)+' daN</td></tr>'
+    + '<tr><td>Utilização (Md/Mr)</td><td colspan="2">'+fmt(st.util,1)+' %</td></tr>'
+    + '<tr><td>Recomendação</td><td colspan="2">'+recoTxt+'</td></tr>';
+
+  var pv = document.getElementById('pr-verdict');
+  pv.textContent = st.approved
+    ? 'POSTE APROVADO — poste de ' + fmt(st.Cn,0) + ' daN atende (necessidade ' + fmt(st.necDaN,0) + ' daN)'
+    : 'POSTE REPROVADO — necessidade ' + fmt(st.necDaN,0) + ' daN > ' + fmt(st.Cn,0) + ' daN' + (st.recoDaN ? ' · sugerido poste de ' + st.recoDaN + ' daN' : '');
+  pv.className = 'pr-verdict ' + (st.approved ? 'ok' : 'no');
+
+  draw(st);
+  document.getElementById('pr-img').src = document.getElementById('cv').toDataURL('image/png');
+}
+
+/* ============================================================
+   Desenho (canvas)
+============================================================ */
+function arrow(ctx,x1,y1,x2,y2,color,lw){
+  ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=lw||2; ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  var ang=Math.atan2(y2-y1,x2-x1), hl=9;
+  ctx.beginPath();
+  ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-hl*Math.cos(ang-0.4), y2-hl*Math.sin(ang-0.4));
+  ctx.lineTo(x2-hl*Math.cos(ang+0.4), y2-hl*Math.sin(ang+0.4));
+  ctx.closePath(); ctx.fill();
+}
+function arcArrow(ctx,cx,cy,r,a0,a1,ccw,color,lw){
+  ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=lw; ctx.lineCap='round';
+  ctx.beginPath(); ctx.arc(cx,cy,r,a0,a1,ccw); ctx.stroke();
+  var tx=cx+r*Math.cos(a1), ty=cy+r*Math.sin(a1);
+  var tang = ccw ? a1-Math.PI/2 : a1+Math.PI/2;
+  var hl=11;
+  ctx.beginPath(); ctx.moveTo(tx,ty);
+  ctx.lineTo(tx+hl*Math.cos(tang-0.5), ty+hl*Math.sin(tang-0.5));
+  ctx.lineTo(tx+hl*Math.cos(tang+0.5), ty+hl*Math.sin(tang+0.5));
+  ctx.closePath(); ctx.fill();
+}
+function dimLine(ctx,x,y1,y2,text){
+  ctx.strokeStyle='#33445a'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(x,y1); ctx.lineTo(x,y2); ctx.stroke();
+  ctx.lineWidth=1.2;
+  [[y1,0],[y2,0]].forEach(function(p){ ctx.beginPath(); ctx.moveTo(x-6,p[0]); ctx.lineTo(x+6,p[0]); ctx.stroke(); });
+  ctx.save(); ctx.translate(x-9,(y1+y2)/2); ctx.rotate(-Math.PI/2);
+  ctx.font='bold 12px Segoe UI'; ctx.fillStyle='#33445a'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(text,0,0); ctx.restore();
+}
+function callout(ctx,x,y,text){
+  ctx.strokeStyle='#444'; ctx.lineWidth=0.9;
+  ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+118,y); ctx.stroke();
+  ctx.fillStyle='#222'; ctx.font='12px Segoe UI'; ctx.textAlign='left'; ctx.textBaseline='middle';
+  ctx.fillText(text,x+122,y);
+}
+function drawAntenna(ctx,x,y){
+  ctx.strokeStyle='#333'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,y-22); ctx.stroke();
+  ctx.lineWidth=1.4;
+  [6,16].forEach(function(dy){ ctx.beginPath(); ctx.moveTo(x-7,y-dy); ctx.lineTo(x+7,y-dy); ctx.stroke(); });
+  ctx.beginPath(); ctx.arc(x,y-26,3,0,2*Math.PI); ctx.fillStyle='#c0392b'; ctx.fill();
+}
+
+function draw(st){
+  var cv=document.getElementById('cv');
+  var ctx=cv.getContext('2d');
+  var W=1360, H=820;
+  ctx.setTransform(2,0,0,2,0,0);
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,W,H);
+
+  ctx.font='bold 17px Segoe UI'; ctx.fillStyle='#0c2e4a'; ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+  ctx.fillText('Esquema do poste — ações do vento (NBR 6123), momentos e deformada', W/2, 24);
+
+  if(st.invalid || st.Lu<=0){
+    ctx.fillStyle='#5b6b7b'; ctx.font='14px Segoe UI';
+    ctx.fillText('Preencha os dados para gerar o desenho.', W/2, H/2);
+    return;
+  }
+
+  var L=st.L, e=st.e, Lu=st.Lu;
+  var xc=400, topM=90, botM=40;
+  var VSC=(H-topM-botM)/L;
+  var WSC=150;
+  var yTop=topM, yGround=topM+Lu*VSC, yBottom=yGround+e*VSC;
+  var wb=st.Dbm*WSC/2, wt=st.Dtm*WSC/2, wg=st.De*WSC/2;
+  function py(z){ return yGround - z*VSC; }
+  function hw(z){ return (st.De+(st.Dtm-st.De)*z/Lu)*WSC/2; }
+  var drawTop=80;
+  function bend(z){ var t=z/Lu; return drawTop*t*t; }
+
+  /* ---- solo ---- */
+  ctx.fillStyle='#efe6d2'; ctx.fillRect(0,yGround,W,yBottom-yGround+22);
+  ctx.strokeStyle='#dccdaf'; ctx.lineWidth=1;
+  for(var yy=yGround+8; yy<yBottom+22; yy+=14){ ctx.beginPath(); ctx.moveTo(0,yy); ctx.lineTo(W,yy); ctx.stroke(); }
+  ctx.strokeStyle='#7a5c3a'; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.moveTo(0,yGround); ctx.lineTo(W,yGround); ctx.stroke();
+  ctx.font='12px Segoe UI'; ctx.fillStyle='#7a5c3a'; ctx.textAlign='left';
+  ctx.fillText('Nível do terreno', 16, yGround-8);
+
+  /* ---- poste enterrado ---- */
+  ctx.beginPath();
+  ctx.moveTo(xc-wb,yBottom); ctx.lineTo(xc+wb,yBottom);
+  ctx.lineTo(xc+wg,yGround); ctx.lineTo(xc-wg,yGround);
+  ctx.closePath();
+  ctx.fillStyle='rgba(150,150,160,0.45)'; ctx.fill();
+  ctx.setLineDash([5,4]); ctx.strokeStyle='#7a7a82'; ctx.lineWidth=1.4; ctx.stroke();
+  ctx.setLineDash([]);
+
+  /* ---- poste exposto ---- */
+  var grad=ctx.createLinearGradient(xc-wg,0,xc+wg,0);
+  grad.addColorStop(0,'#d9d9d9'); grad.addColorStop(0.5,'#f4f4f4'); grad.addColorStop(1,'#c7c7c7');
+  ctx.beginPath();
+  ctx.moveTo(xc-wg,yGround); ctx.lineTo(xc+wg,yGround);
+  ctx.lineTo(xc+wt,yTop); ctx.lineTo(xc-wt,yTop);
+  ctx.closePath();
+  ctx.fillStyle=grad; ctx.fill();
+  ctx.strokeStyle='#555'; ctx.lineWidth=1.6; ctx.stroke();
+
+  /* ---- engastamento (apoio fixo) ---- */
+  ctx.strokeStyle='#333'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(xc-wg-8,yGround); ctx.lineTo(xc+wg+8,yGround); ctx.stroke();
+  for(var s=-wg; s<=wg; s+=7){ ctx.beginPath(); ctx.moveTo(xc+s,yGround); ctx.lineTo(xc+s-7,yGround+11); ctx.stroke(); }
+
+  /* ---- deformada (exagerada, laranja tracejada) ---- */
+  ctx.save();
+  ctx.strokeStyle='#e67e22'; ctx.lineWidth=1.8; ctx.setLineDash([8,5]);
+  ctx.beginPath();
+  ctx.moveTo(xc, yGround);
+  for(var ddz=0; ddz<=24; ddz++){ var dz=Lu*ddz/24; ctx.lineTo(xc+bend(dz), py(dz)); }
+  ctx.stroke();
+  ctx.restore();
+  arrow(ctx, xc, yTop, xc+drawTop, yTop, '#e67e22', 1.6);
+  ctx.font='bold 12px Segoe UI'; ctx.fillStyle='#c8640a'; ctx.textAlign='center';
+  ctx.fillText('δ ≈ '+fmt(st.dTop*1000,1)+' mm', xc+drawTop/2, yTop-7);
+
+  /* ---- cotas (esquerda) ---- */
+  dimLine(ctx, xc-wb-52, yGround, yBottom, 'e = '+fmt(e));
+  dimLine(ctx, xc-wb-92, yTop, yGround, 'Lu = '+fmt(Lu));
+  dimLine(ctx, xc-wb-132, yTop, yBottom, 'L = '+fmt(L));
+
+  /* ---- escada (esquerda) ---- */
+  if(st.escada){
+    ctx.strokeStyle='#8a8a90'; ctx.lineWidth=1.2;
+    var lx1=xc-wb-24, lx2=xc-wb-16;
+    ctx.beginPath(); ctx.moveTo(lx1,yGround+4); ctx.lineTo(lx2,yGround+4);
+    ctx.lineTo(lx2,yTop); ctx.lineTo(lx1,yTop); ctx.closePath(); ctx.stroke();
+    for(var rr=yTop+9; rr<yGround; rr+=15){ ctx.beginPath(); ctx.moveTo(lx1,rr); ctx.lineTo(lx2,rr); ctx.stroke(); }
+    ctx.font='10.5px Segoe UI'; ctx.fillStyle='#666'; ctx.textAlign='right';
+    ctx.fillText('Escada', lx1-6, py(Lu*0.5));
+  }
+
+  /* ---- diâmetros (direita, líder curto) ---- */
+  function dia(x,y,text){
+    ctx.strokeStyle='#444'; ctx.lineWidth=0.9;
+    ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+16,y); ctx.stroke();
+    ctx.font='11.5px Segoe UI'; ctx.fillStyle='#222'; ctx.textAlign='left'; ctx.textBaseline='middle';
+    ctx.fillText(text, x+20, y);
+  }
+  dia(xc+wt+4, yTop+6, 'Dt = '+fmt(st.Dtm*1000,0)+' mm');
+  dia(xc+wg+4, yGround-8, 'D_e = '+fmt(st.De*1000,0)+' mm');
+  dia(xc+wb+4, yBottom+6, 'Db = '+fmt(st.Dbm*1000,0)+' mm');
+
+  /* ---- vento distribuído no poste (direita) ---- */
+  var fracs=[0.25,0.5,0.75];
+  fracs.forEach(function(f){
+    var z=Lu*f, ya=py(z);
+    var q=qdyn(vk(z,st));
+    var len=clamp(12+q*0.013,12,36);
+    var x0=xc+hw(z)+4;
+    arrow(ctx,x0,ya,x0+len,ya,'#1b6ec2',2);
+  });
+
+  /* ---- antenas ---- */
+  st.ants.forEach(function(a,i){
+    var ya=py(a.h);
+    var ax=xc+26+i*38;
+    drawAntenna(ctx,ax,ya);
+    var flen=clamp(14+a.F/9.80665*1.2,14,110);
+    arrow(ctx,ax+8,ya,ax+8+flen,ya,'#1b6ec2',2.2);
+    ctx.font='bold 11px Segoe UI'; ctx.fillStyle='#0c2e4a'; ctx.textAlign='left';
+    ctx.fillText('A'+(i+1)+' F='+fmt(a.F/9.80665)+' kgf', ax+10, ya+13);
+  });
+
+  /* ---- plataforma ---- */
+  if(st.plataforma){
+    var ypl=py(st.pl.h);
+    var ph=Math.max(wt+16,26);
+    ctx.fillStyle='#a67c43'; ctx.strokeStyle='#6e522b';
+    ctx.fillRect(xc-ph, ypl-7, ph*2, 7); ctx.strokeRect(xc-ph, ypl-7, ph*2, 7);
+    var plen=clamp(14+st.pl.Fk*1.1,14,110);
+    arrow(ctx,xc+ph+6,ypl-3,xc+ph+6+plen,ypl-3,'#1b6ec2',2.2);
+    ctx.font='bold 11px Segoe UI'; ctx.fillStyle='#0c2e4a'; ctx.textAlign='left';
+    ctx.fillText('Plataforma F='+fmt(st.pl.Fk)+' kgf', xc+ph+8, ypl+13);
+  }
+
+  /* ---- eixo de referência das antenas (direita) ---- */
+  var rx=820;
+  ctx.strokeStyle='#9db8d2'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(rx,yTop); ctx.lineTo(rx,yGround); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.font='10.5px Segoe UI'; ctx.fillStyle='#6a89a8'; ctx.textAlign='center';
+  ctx.fillText('L (topo)', rx, yTop-4);
+  ctx.fillText('0 (engastamento)', rx, yGround+13);
+
+  /* ---- forças equivalentes no topo (céu) ---- */
+  var cnLen=clamp(40+st.cnKgf*0.05,40,110);
+  arrow(ctx, xc, yTop-24, xc-cnLen, yTop-24, '#1e7e34', 3);
+  ctx.font='bold 12px Segoe UI'; ctx.fillStyle='#1e7e34'; ctx.textAlign='right';
+  ctx.fillText('Cn = '+fmt(st.cnKgf)+' kgf (resistente)', xc-8, yTop-28);
+  var fpLen=clamp(40+st.Fproj*0.05,40,110);
+  arrow(ctx, xc, yTop-46, xc+fpLen, yTop-46, '#c0392b', 3);
+  ctx.fillStyle='#c0392b'; ctx.textAlign='left';
+  ctx.fillText('Fproj = '+fmt(st.Fproj)+' kgf (projeto)', xc+8, yTop-50);
+
+  /* ---- momentos na base (esquerda, acima do solo) ---- */
+  arcArrow(ctx, xc, yGround, 84, Math.PI+0.12, 1.5*Math.PI-0.12, false, '#1e7e34', 3);
+  ctx.font='bold 12px Segoe UI'; ctx.fillStyle='#1e7e34'; ctx.textAlign='right';
+  ctx.fillText('Mr', xc-92, yGround-58);
+  arcArrow(ctx, xc, yGround, 66, 1.5*Math.PI-0.12, Math.PI+0.12, true, '#c0392b', 3);
+  ctx.fillStyle='#c0392b';
+  ctx.fillText('Md', xc-74, yGround-32);
+
+  /* ---- legenda (canto superior direito) ---- */
+  var lx=1040, ly=30, lw=300, lh=120;
+  ctx.fillStyle='rgba(255,255,255,0.95)'; ctx.strokeStyle='#cfd8e3';
+  ctx.beginPath(); ctx.fillRect(lx,ly,lw,lh); ctx.strokeRect(lx,ly,lw,lh);
+  ctx.font='bold 12.5px Segoe UI'; ctx.fillStyle='#0c2e4a'; ctx.textAlign='left';
+  ctx.fillText('Legenda', lx+12, ly+20);
+  ctx.font='11.5px Segoe UI'; ctx.fillStyle='#1f2d3d';
+  arrow(ctx, lx+14, ly+38, lx+36, ly+38, '#1b6ec2', 2); ctx.fillText('Força do vento (NBR 6123)', lx+44, ly+42);
+  arrow(ctx, lx+14, ly+58, lx+36, ly+58, '#1e7e34', 2); ctx.fillText('Resistente: Mr = Cn·Lu', lx+44, ly+62);
+  arrow(ctx, lx+14, ly+78, lx+36, ly+78, '#c0392b', 2); ctx.fillText('Projeto: Md = Σ(F·z)', lx+44, ly+82);
+  ctx.strokeStyle='#e67e22'; ctx.lineWidth=2; ctx.setLineDash([5,4]);
+  ctx.beginPath(); ctx.moveTo(lx+14,ly+100); ctx.lineTo(lx+36,ly+100); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillText('Deformada (exagerada)', lx+44, ly+104);
+}
+
+/* ============================================================
+   Inicialização
+============================================================ */
+document.getElementById('projData').value = new Date().toLocaleDateString('pt-BR');
+if(window.posteAPI && window.posteAPI.onSaved){
+  window.posteAPI.onSaved(function(res){
+    if(res && res.ok){ showToast('Relatório salvo em: ' + res.path); }
+    else { showToast('Erro ao salvar: ' + ((res && res.error) || 'desconhecido')); }
+  });
+}
+renderAntennas();
+onS1();
+recalc();
+</script>
+</body>
+</html>
